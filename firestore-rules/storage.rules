@@ -1,0 +1,45 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─── Helper Functions ─────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.role == 'admin';
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*')
+          && request.resource.size < 20 * 1024 * 1024; // 20MB max
+    }
+
+    // ─── Survey photos - originals (admin upload only) ────────
+    match /surveys/{surveyId}/originals/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidImage();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Survey photos - processed (AI backend writes) ────────
+    match /surveys/{surveyId}/processed/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin(); // AI backend uses admin SDK
+      allow delete: if isAdmin();
+    }
+
+    // ─── Thumbnails ────────────────────────────────────────────
+    match /surveys/{surveyId}/thumbnails/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── Default deny ─────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
