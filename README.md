@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FaceRater Research Platform
 
 A production-ready, full-stack AI-powered face rating platform for academic research, perception analysis, and psychological experiments.
@@ -215,3 +216,6 @@ docker run -p 8000:8000 --env-file .env facerating-ai
 ## Support
 
 For academic/research use. Contributions welcome via GitHub.
+=======
+# FaceValueHost
+>>>>>>> 8edeaea135b05f122fccc1c9c5339a325ffda9d8
